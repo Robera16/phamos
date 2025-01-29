@@ -43,56 +43,36 @@
       var self = this;
       const user_date_fmt = frappe.datetime.get_user_date_fmt().toUpperCase();
       const user_time_fmt = frappe.datetime.get_user_time_fmt();
-      frappe.db.get_value(
-        "phamos Settings",
-        {},
-        "is_employee_feedback",
-        function(value) {
-          if (value && value.is_employee_feedback == 1) {
-            frappe.db.get_value(
-              "Employee",
-              { user_id: frappe.session.user },
-              "name",
-              function(value_user) {
-                if (value_user && value_user.name) {
-                  var today_date2 = frappe.datetime.nowdate();
-                  frappe.db.get_value(
-                    "Have a Great Day",
-                    {
-                      user: frappe.session.user,
-                      creation_date: today_date2
-                    },
-                    "name",
-                    function(value_feedback) {
-                      if (value_feedback && value_feedback.name) {
-                      } else {
-                        self.dialog_box();
-                      }
-                    }
-                  );
-                } else {
-                }
-              }
-            );
-          } else if (value && value.is_employee_feedback == 0) {
-            var today_date = frappe.datetime.nowdate();
-            frappe.db.get_value(
-              "Have a Great Day",
-              {
+      frappe.db.get_value("phamos Settings", {}, "is_employee_feedback", function(value) {
+        if (value && value.is_employee_feedback == 1) {
+          frappe.db.get_value("Employee", { user_id: frappe.session.user }, "name", function(value_user) {
+            if (value_user && value_user.name) {
+              var today_date2 = frappe.datetime.nowdate();
+              frappe.db.get_value("Have a Great Day", {
                 user: frappe.session.user,
-                creation_date: today_date
-              },
-              "name",
-              function(value_feedback) {
+                creation_date: today_date2
+              }, "name", function(value_feedback) {
                 if (value_feedback && value_feedback.name) {
                 } else {
                   self.dialog_box();
                 }
-              }
-            );
-          }
+              });
+            } else {
+            }
+          });
+        } else if (value && value.is_employee_feedback == 0) {
+          var today_date = frappe.datetime.nowdate();
+          frappe.db.get_value("Have a Great Day", {
+            user: frappe.session.user,
+            creation_date: today_date
+          }, "name", function(value_feedback) {
+            if (value_feedback && value_feedback.name) {
+            } else {
+              self.dialog_box();
+            }
+          });
         }
-      );
+      });
     }
     dialog_box() {
       this.dialog = new frappe.ui.Dialog({
@@ -148,4 +128,4 @@
     new MorningFeedbackDialog();
   });
 })();
-//# sourceMappingURL=phamos.bundle.5A3QDGNE.js.map
+//# sourceMappingURL=phamos.bundle.KAZJNMJ4.js.map
