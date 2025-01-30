@@ -71,3 +71,10 @@ def get_permitted_cards(dashboard_name):
 		if frappe.has_permission("Number Card", doc=card.card):
 			permitted_cards.append(card)
 	return permitted_cards
+
+
+@frappe.whitelist()
+def get_leave_type_settings():
+    phamos_settings = frappe.get_single("phamos Settings")
+    leave_type_settings = phamos_settings.get("leave_type_settings")
+    return [row.as_dict() for row in leave_type_settings]

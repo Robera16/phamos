@@ -21,7 +21,9 @@
   "thread_posting_hour",
   "last_daily_thread_creation_date",
   "section_break_s3bt",
-  "mattermost_channel"
+  "mattermost_channel",
+  "leave_management_tab",
+  "leave_type_settings"
  ],
  "fields": [
   {
@@ -106,12 +108,23 @@
    "label": "Allowed Additional Work Time (In Mins)",
    "non_negative": 1,
    "print_width": "70"
+  },
+  {
+   "fieldname": "leave_management_tab",
+   "fieldtype": "Tab Break",
+   "label": "Leave Management"
+  },
+  {
+   "fieldname": "leave_type_settings",
+   "fieldtype": "Table",
+   "label": "Leave Type Settings",
+   "options": "Leave Type Management"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-09 19:04:13.182043",
+ "modified": "2025-01-30 10:05:01.602042",
  "modified_by": "Administrator",
  "module": "Phamos",
  "name": "phamos Settings",

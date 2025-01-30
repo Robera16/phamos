@@ -84,17 +84,27 @@ frappe.pages['self-service-employee'].on_page_load = function (wrapper) {
     function appendWebform() {
         const web_form_route = 'leave-application';
         const web_form_url = `/${web_form_route}?format=embedded`;
-
+    
         const iframe_html = `
-            <iframe src="${web_form_url}" width="100%" height="600" frameborder="0"></iframe>
-            <style>
-                /* Hide the header and footer of the web form */
-                .web-header, footer.web-footer {
-                    display: none !important;
-                }
-            </style>
+            <iframe id="web-form-iframe" src="${web_form_url}" width="100%" height="600" frameborder="0" style="display: none;"></iframe>
         `;
         $('#web-form-container').html(iframe_html);
+    
+        const iframe = document.getElementById('web-form-iframe');
+    
+        iframe.onload = function() {
+            const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+    
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .navbar, footer.web-footer {
+                    display: none !important;
+                }
+            `;
+            iframeDocument.head.appendChild(style);
+    
+            iframe.style.display = 'block';
+        };
     }
 
     function fetchLoggedUserInfo() {
@@ -135,21 +145,32 @@ frappe.pages['self-service-employee'].on_page_load = function (wrapper) {
     function renderLeaveBalanceTable(leaveDetails) {
         const tableBody = document.getElementById("leave-balance-body");
         tableBody.innerHTML = "";
-
-        for (const [leaveType, details] of Object.entries(leaveDetails)) {
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${leaveType}</td>
-                <td>${details.total_leaves || 0}</td>
-                <td>${details.expired_leaves || 0}</td>
-                <td>${details.leaves_taken || 0}</td>
-                <td>${details.leaves_pending_approval || 0}</td>
-                <td>${details.remaining_leaves || 0}</td>
-            `;
-
-            tableBody.appendChild(row);
-        }
+    
+        frappe.call({
+            method: "phamos.phamos.page.self_service_employee.self_service_employee.get_leave_type_settings",
+            callback: function(response) {
+                if (response.message) {
+                    const leaveTypeSettings = response.message;
+                    for (const [leaveType, details] of Object.entries(leaveDetails)) {
+                        const row = document.createElement("tr");
+                        const isEnabled = leaveTypeSettings.some(setting => setting.leave_type === leaveType && setting.enable);
+    
+                        if (isEnabled) {
+                            row.innerHTML = `
+                                <td>${leaveType}</td>
+                                <td>${details.total_leaves || 0}</td>
+                                <td>${details.expired_leaves || 0}</td>
+                                <td>${details.leaves_taken || 0}</td>
+                                <td>${details.leaves_pending_approval || 0}</td>
+                                <td>${details.remaining_leaves || 0}</td>
+                            `;
+    
+                            tableBody.appendChild(row);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     function render_cards(wrapper, card_names) {
